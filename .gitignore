@@ -1,3 +1,4 @@
 /vendor
 /.idea
+/storage/framework
 .phpunit.result.cache
