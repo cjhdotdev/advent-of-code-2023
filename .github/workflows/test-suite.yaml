@@ -41,9 +41,6 @@ jobs:
         if: steps.test-composer-cache.outputs.cache-hit != 'true'
         run: composer update -q --no-ansi --no-interaction --no-progress --prefer-dist
       - name: Prepare application for testing
-        run: |
-          php -r "file_exists('.env') || copy('.env.example', '.env');"
-          php artisan key:generate
-          chmod -R 777 storage bootstrap/cache
+        run: chmod -R 777 storage bootstrap/cache
       - name: Run test suite
         run: vendor/bin/pest --parallel
