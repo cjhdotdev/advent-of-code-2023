@@ -13,6 +13,8 @@ declare(strict_types=1);
 |
 */
 
+use App\Commands\BaseCommand;
+
 uses(Tests\TestCase::class)->in('Feature', 'Unit');
 
 /*
@@ -36,3 +38,24 @@ uses(Tests\TestCase::class)->in('Feature', 'Unit');
 | global functions to help you to reduce the number of lines of code in your test files.
 |
 */
+
+function testClass(): BaseCommand
+{
+    return new class extends BaseCommand
+    {
+        public function inputFile(): string
+        {
+            return 'filepath';
+        }
+
+        public function solvePuzzlePartOne(): string
+        {
+            return '';
+        }
+
+        public function solvePuzzlePartTwo(): string
+        {
+            return '';
+        }
+    };
+}

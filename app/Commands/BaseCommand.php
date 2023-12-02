@@ -11,49 +11,59 @@ use LaravelZero\Framework\Commands\Command;
 
 abstract class BaseCommand extends Command
 {
-    /** @var array<string, string> */
-    protected array $fileContents;
+    protected string $fileContents;
+
+    abstract public function inputFile(): string;
+
+    abstract public function solvePuzzlePartOne(): string;
+
+    abstract public function solvePuzzlePartTwo(): string;
+
+    public function handle(): int
+    {
+        $this->output->note('The result for part 1 was: '.$this->solvePuzzlePartOne());
+        $this->output->note('The result for part 2 was: '.$this->solvePuzzlePartTwo());
+
+        return self::SUCCESS;
+    }
 
     /**
-     * @return array<string, string>
+     * @return Collection<string>
      */
-    abstract public function inputFiles(): array;
-
-    public function getFile(string $filename): Collection
+    public function getFile(): Collection
     {
         if (empty($this->fileContents)) {
-            $this->prepareFiles();
+            $this->prepareFile();
         }
 
-        return collect([$this->fileContents[$filename]]);
+        return collect([$this->fileContents]);
     }
 
-    public function getFileByLines(string $filename): Collection
+    /**
+     * @return Collection<string>
+     */
+    public function getFileByLines(): Collection
     {
-        return $this->getFileByDelimiter($filename, PHP_EOL);
+        return $this->getFileByDelimiter(PHP_EOL);
     }
 
-    public function getFileByDelimiter(string $filename, string $delimiter): Collection
+    /**
+     * @return Collection<string>
+     */
+    public function getFileByDelimiter(string $delimiter): Collection
     {
         if (empty($this->fileContents)) {
-            $this->prepareFiles();
+            $this->prepareFile();
         }
 
         return
-            ! empty($this->fileContents[$filename])
-                ? Str::of($this->fileContents[$filename])->explode($delimiter)
+            ! empty($this->fileContents)
+                ? Str::of($this->fileContents)->explode($delimiter)
                 : collect();
     }
 
-    private function prepareFiles(): void
+    private function prepareFile(): void
     {
-        foreach ($this->inputFiles() as $filename => $filepath) {
-            $this->prepareFile($filename, $filepath);
-        }
-    }
-
-    private function prepareFile(string $filename, string $filepath): void
-    {
-        $this->fileContents[$filename] = Storage::get($filepath) ?? '';
+        $this->fileContents = Storage::disk('local')->get($this->inputFile()) ?? '';
     }
 }
