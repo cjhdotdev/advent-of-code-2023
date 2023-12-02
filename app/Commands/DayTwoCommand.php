@@ -13,6 +13,12 @@ class DayTwoCommand extends BaseCommand
 
     protected $description = 'Day 2';
 
+    private const int MAX_RED = 12;
+
+    private const int MAX_GREEN = 13;
+
+    private const int MAX_BLUE = 14;
+
     public function inputFile(): string
     {
         return 'two.txt';
@@ -95,9 +101,9 @@ class DayTwoCommand extends BaseCommand
     private function hasTooManyForColour(string $colour, string $count): bool
     {
         return match ($colour) {
-            'red' => intval($count) > 12,
-            'green' => intval($count) > 13,
-            'blue' => intval($count) > 14,
+            'red' => intval($count) > self::MAX_RED,
+            'green' => intval($count) > self::MAX_GREEN,
+            'blue' => intval($count) > self::MAX_BLUE,
             default => true,
         };
     }
