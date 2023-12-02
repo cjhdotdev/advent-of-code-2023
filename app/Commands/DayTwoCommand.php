@@ -23,7 +23,7 @@ class DayTwoCommand extends BaseCommand
         return strval(
             $this
                 ->getGameCollection()
-                ->reduce(fn ($total, $gameStr, $gameId) => $total + ($this->allLooksValid($gameStr) ? intval($gameId) : 0))
+                ->reduce(fn ($total, $games, $gameId) => $total + ($this->allLooksValid($games) ? intval($gameId) : 0))
         );
     }
 
@@ -32,7 +32,7 @@ class DayTwoCommand extends BaseCommand
         return strval(
             $this
                 ->getGameCollection()
-                ->reduce(fn ($total, $gameStr, $gameId) => $total + ($this->findPowerOfFewestCubes($gameStr)))
+                ->reduce(fn ($total, $games) => $total + ($this->findPowerOfFewestCubes($games)))
         );
     }
 
@@ -46,9 +46,9 @@ class DayTwoCommand extends BaseCommand
             ]);
     }
 
-    private function allLooksValid(string $gameString): bool
+    private function allLooksValid(string $games): bool
     {
-        return Str::of($gameString)
+        return Str::of($games)
             ->explode('; ')
             ->reject(fn ($game) => (
                 Str::of($game)
@@ -72,13 +72,13 @@ class DayTwoCommand extends BaseCommand
         ));
     }
 
-    private function findPowerOfFewestCubes(string $gameString): int
+    private function findPowerOfFewestCubes(string $games): int
     {
         return intval(
-            Str::of($gameString)
+            Str::of($games)
                 ->explode('; ')
-                ->reduce(fn ($cubeCount, $cubes) => (
-                    Str::of($cubes)
+                ->reduce(fn ($cubeCount, $game) => (
+                    Str::of($game)
                         ->explode(', ')
                         ->reduce(fn ($cubeCount, $cubes) => (
                             $this
