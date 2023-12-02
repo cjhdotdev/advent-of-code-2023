@@ -7,7 +7,7 @@ parameters:
         - bootstrap
         - config
         - tests
-    level: 9
+    level: 8
     ignoreErrors:
     excludePaths:
         - bootstrap/cache
