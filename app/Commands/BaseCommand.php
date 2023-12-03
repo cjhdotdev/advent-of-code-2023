@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Commands;
 
+use App\Collections\GridCollection;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -12,6 +13,8 @@ use LaravelZero\Framework\Commands\Command;
 abstract class BaseCommand extends Command
 {
     protected string $fileContents;
+
+    protected ?GridCollection $grid = null;
 
     abstract public function inputFile(): string;
 
@@ -60,6 +63,24 @@ abstract class BaseCommand extends Command
             ! empty($this->fileContents)
                 ? Str::of($this->fileContents)->explode($delimiter)
                 : collect();
+    }
+
+    public function getFileAsGrid(): GridCollection
+    {
+        if (is_null($this->grid)) {
+            $this->grid = new GridCollection();
+
+            $this
+                ->getFileByLines()
+                ->filter()
+                ->each(fn ($line, $lineId) => (
+                    Str::of($line)
+                        ->matchAll('/./')
+                        ->each(fn ($char, $charId) => $this->grid->setByCoordinate($charId, $lineId, $char))
+                ));
+        }
+
+        return $this->grid;
     }
 
     private function prepareFile(): void
