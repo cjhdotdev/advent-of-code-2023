@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Collections;
 
 use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
 
 class GridCollection extends Collection
 {
@@ -35,6 +36,17 @@ class GridCollection extends Collection
             $this->getKey($x, $y + 1) => $this->getByCoordinate($x, $y + 1),
             $this->getKey($x + 1, $y + 1) => $this->getByCoordinate($x + 1, $y + 1),
         ]);
+    }
+
+    /**
+     * @return array<int, int>
+     */
+    public function getXYFromKey(string $key): array
+    {
+        return Str::of($key)
+            ->explode('-')
+            ->map(fn ($key) => intval($key))
+            ->toArray();
     }
 
     private function getKey(int $x, int $y): string

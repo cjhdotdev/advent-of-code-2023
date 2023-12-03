@@ -85,7 +85,7 @@ class DayThreeCommand extends BaseCommand
      */
     private function findNumber(GridCollection $grid, string $key): array
     {
-        [$x, $y] = Str::of($key)->explode('-')->map(fn ($key) => intval($key));
+        [$x, $y] = $grid->getXYFromKey($key);
         $number = $grid->getByCoordinate($x, $y);
         $foundKey = $key;
         $left = $right = $x;
