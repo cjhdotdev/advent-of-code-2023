@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Commands;
 
+use App\Collections\GridCollection;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -60,6 +61,22 @@ abstract class BaseCommand extends Command
             ! empty($this->fileContents)
                 ? Str::of($this->fileContents)->explode($delimiter)
                 : collect();
+    }
+
+    public function getFileAsGrid(): GridCollection
+    {
+        $grid = new GridCollection();
+
+        $this
+            ->getFileByLines()
+            ->filter()
+            ->each(fn ($line, $lineId) => (
+                Str::of($line)
+                    ->matchAll('/./')
+                    ->each(fn ($char, $charId) => $grid->setByCoordinate($charId, $lineId, $char))
+            ));
+
+        return $grid;
     }
 
     private function prepareFile(): void

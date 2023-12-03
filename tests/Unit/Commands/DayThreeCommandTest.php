@@ -9,13 +9,22 @@ it('solves part one of the puzzle', function () {
         ->makePartial()
         ->shouldReceive('getFileByLines')
         ->andReturn(collect([
-
+            '467..114..',
+            '...*......',
+            '..35..633.',
+            '......#...',
+            '617*......',
+            '.....+.58.',
+            '..592.....',
+            '......755.',
+            '...$.*....',
+            '.664.598..',
         ]))
         ->getMock();
 
     expect($mock->solvePuzzlePartOne())
         ->toBeString()
-        ->toEqual('');
+        ->toEqual('4361');
 });
 
 it('solves part two of the puzzle', function () {
@@ -23,7 +32,16 @@ it('solves part two of the puzzle', function () {
         ->makePartial()
         ->shouldReceive('getFileByLines')
         ->andReturn(collect([
-
+            '467..114..',
+            '...*......',
+            '..35..633.',
+            '......#...',
+            '617*......',
+            '.....+.58.',
+            '..592.....',
+            '......755.',
+            '...$.*....',
+            '.664.598..',
         ]))
         ->getMock();
 
