@@ -21,12 +21,10 @@ class DayThreeCommand extends BaseCommand
 
     public function solvePuzzlePartOne(): string
     {
-        $grid = $this->getFileAsGrid();
-
         return strval(
             $this
                 ->getFileByLines()
-                ->map(fn ($line, $x) => $this->findAdjacentNumbers($line, $x, $grid))
+                ->map(fn ($line, $y) => $this->findAdjacentNumbers($line, $y))
                 ->flatten()
                 ->sum()
         );
@@ -35,12 +33,77 @@ class DayThreeCommand extends BaseCommand
     public function solvePuzzlePartTwo(): string
     {
         return strval(
-            ''
+            $this
+                ->getFileByLines()
+                ->map(fn ($line, $y) => $this->findGearPairs($line, $y))
+                ->flatten()
+                ->sum()
         );
     }
 
-    private function findAdjacentNumbers(string $line, int $y, GridCollection $grid): Collection
+    private function findGearPairs(string $line, int $y): Collection
     {
+        static $seenKeys = collect();
+        $grid = $this->getFileAsGrid();
+        $gearPairs = collect();
+
+        Str::of($line)
+            ->matchAll('/./')
+            ->filter(fn ($char) => $this->isGear($char))
+            ->each(fn ($char, $x) => (
+                $gearPairs->push(
+                    $grid
+                        ->getAllSurroundingCoordinates($x, $y)
+                        ->reject(fn ($char, $key) => ! $this->isDigit($char) || $seenKeys->search($key))
+                        ->each(fn ($char, $key) => $seenKeys->push($key))
+                        ->reduce(
+                            function (Collection $foundNumbers, string $char, string $key) use ($grid) {
+                                [$foundKeys, $foundNumber] = $this->findNumber($grid, $key);
+
+                                return $foundNumbers->put(
+                                    $foundKeys,
+                                    $foundNumber,
+                                );
+                            },
+                            collect(),
+                        )
+                        ->pipe(
+                            fn (Collection $collect) => (
+                                $collect->count() === 2
+                                    ? $collect->reduce(fn ($total, $number) => $total * intval($number), 1)
+                                    : 0
+                            )
+                        )
+                )
+            ));
+
+        return $gearPairs;
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    private function findNumber(GridCollection $grid, string $key): array
+    {
+        [$x, $y] = Str::of($key)->explode('-')->map(fn ($key) => intval($key));
+        $number = $grid->getByCoordinate($x, $y);
+        $foundKey = $key;
+        $left = $right = $x;
+        while (($char = $grid->getByCoordinate(--$left, $y)) !== '' && $this->isDigit($char)) {
+            $number = sprintf('%s%s', $char, $number);
+            $foundKey = sprintf('%s-%s/%s', $left, $y, $foundKey);
+        }
+        while (($char = $grid->getByCoordinate(++$right, $y)) !== '' && $this->isDigit($char)) {
+            $number = sprintf('%s%s', $number, $char);
+            $foundKey = sprintf('%s/%s-%s', $foundKey, $right, $y);
+        }
+
+        return [$foundKey, $number];
+    }
+
+    private function findAdjacentNumbers(string $line, int $y): Collection
+    {
+        $grid = $this->getFileAsGrid();
         $adjacentNumbers = collect();
         $surrounding = collect();
         $finalNumber = Str::of($line)
@@ -79,5 +142,10 @@ class DayThreeCommand extends BaseCommand
     private function isEmpty(string $character): bool
     {
         return empty($character) || $character === '.';
+    }
+
+    private function isGear(string $character): bool
+    {
+        return $character === '*';
     }
 }

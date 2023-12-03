@@ -47,5 +47,5 @@ it('solves part two of the puzzle', function () {
 
     expect($mock->solvePuzzlePartTwo())
         ->toBeString()
-        ->toEqual('');
+        ->toEqual('467835');
 });

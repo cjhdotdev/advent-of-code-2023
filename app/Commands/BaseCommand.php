@@ -14,6 +14,8 @@ abstract class BaseCommand extends Command
 {
     protected string $fileContents;
 
+    protected ?GridCollection $grid = null;
+
     abstract public function inputFile(): string;
 
     abstract public function solvePuzzlePartOne(): string;
@@ -65,18 +67,20 @@ abstract class BaseCommand extends Command
 
     public function getFileAsGrid(): GridCollection
     {
-        $grid = new GridCollection();
+        if (is_null($this->grid)) {
+            $this->grid = new GridCollection();
 
-        $this
-            ->getFileByLines()
-            ->filter()
-            ->each(fn ($line, $lineId) => (
-                Str::of($line)
-                    ->matchAll('/./')
-                    ->each(fn ($char, $charId) => $grid->setByCoordinate($charId, $lineId, $char))
-            ));
+            $this
+                ->getFileByLines()
+                ->filter()
+                ->each(fn ($line, $lineId) => (
+                    Str::of($line)
+                        ->matchAll('/./')
+                        ->each(fn ($char, $charId) => $this->grid->setByCoordinate($charId, $lineId, $char))
+                ));
+        }
 
-        return $grid;
+        return $this->grid;
     }
 
     private function prepareFile(): void
