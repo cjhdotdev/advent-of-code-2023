@@ -23,7 +23,7 @@ class DayFourCommand extends BaseCommand
             $this
                 ->getFileByLines()
                 ->mapWithKeys(fn ($line) => [
-                    Str::of($line)->match('/Card  ? ?([0-9]+):/')->toString() => collect(
+                    Str::of($line)->match('/Card[ ]+([0-9]+):/')->toString() => collect(
                         array_intersect(
                             Str::of($line)
                                 ->match('/: (.+) \|/')
@@ -37,7 +37,7 @@ class DayFourCommand extends BaseCommand
                                 ->toArray(),
                         )
                     )
-                        ->reduce(fn ($total, $count) => ($total === 0 ? 1 : $total + $total), 0),
+                    ->reduce(fn ($total, $count) => ($total === 0 ? 1 : $total + $total), 0),
                 ])
                 ->sum()
         );
