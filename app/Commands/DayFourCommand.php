@@ -37,7 +37,7 @@ class DayFourCommand extends BaseCommand
                                 ->toArray(),
                         )
                     )
-                    ->reduce(fn ($total, $count) => ($total === 0 ? 1 : $total + $total), 0),
+                        ->reduce(fn ($total, $count) => ($total === 0 ? 1 : $total + $total), 0),
                 ])
                 ->sum()
         );
