@@ -28,12 +28,10 @@ class DayFourCommand extends BaseCommand
                             Str::of($line)
                                 ->match('/: (.+) \|/')
                                 ->matchAll('/([0-9]+)/')
-                                ->map(fn ($number) => intval($number))
                                 ->toArray(),
                             Str::of($line)
                                 ->match('/\| (.+)$/')
                                 ->matchAll('/([0-9]+)/')
-                                ->map(fn ($number) => intval($number))
                                 ->toArray(),
                         )
                     )
